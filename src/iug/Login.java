@@ -3,6 +3,9 @@ package iug;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+
+import persistencia.Conexion;
 
 public class Login {
     // Creacion de componentes
@@ -20,8 +23,8 @@ public class Login {
     // configuracion de los componentes
     private void init(){
 
-        Integer cc = 1122334455;
-        String password = "pass123";
+//        Integer cc = 1122334455;
+//        String password = "pass123";
 
         // Configuracion de la vista
         JFrame jFrame = new JFrame();
@@ -30,8 +33,6 @@ public class Login {
         jFrame.setVisible(true);
         jFrame.add(main);
 
-        textFieldCC.setText(String.valueOf(cc));
-        passwordField.setText(password);
 
         // Boton de Validacion
         entrarButton.addActionListener(new ActionListener() {
@@ -47,9 +48,19 @@ public class Login {
                     char[] p = passwordField.getPassword();
                     String validarPass = String.valueOf(p);
 
+                    String consulta = "SELECT * FROM usuario Where cc = "+Integer.valueOf(textFieldCC.getText())+" and contraseña = '"+validarPass+"'";
+                    Conexion conexion = new Conexion();
+                    Connection con = conexion.getConexion();
+                    String[] result = conexion.validar(consulta);
+                    conexion.cerrarConec();
+
+                    Integer cc = Integer.valueOf(result[0]);
+                    String password = result[2];
+
                     if (Integer.valueOf(textFieldCC.getText()).equals(cc) && validarPass.equals(password)){
                         System.out.println("Correcto");
                         Bienvenido n = new Bienvenido();
+                        n.setNombre(result[1]);
                         jFrame.setVisible(false);
                     }
                     else {
